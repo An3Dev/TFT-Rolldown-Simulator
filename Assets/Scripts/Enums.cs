@@ -2,32 +2,30 @@
 {
     Adept,
     Assassin,
-    Blacksmith,
+    Blacksmith, // missing
     Brawler,
     Cultist,
-    Daredevil,
+    Daredevil, // missing
     Divine,
-    Dragonsoul,
+    Dragonsoul, // missing
     Duelist,
     Elderwood,
     Emperor,
     Enlightened,
-    Executioner,
+    Executioner, // missing
     Exile,
-    Fabled,
+    Fabled, // missing
     Fortune,
     Keeper,
     Mage,
     Mystic,
     Ninja,
     Sharpshooter,
-    Slayer,
+    Slayer, // missing
     Spirit,
-    Syphoner,
+    Syphoner, // missing
     TheBoss,
     Vanguard,
     Warlord
 }
-
-public enum Tier { S, A, B, C, D };
 

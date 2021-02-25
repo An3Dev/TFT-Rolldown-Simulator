@@ -15,6 +15,5 @@ MonoBehaviour:
   championName: Diana
   description: 
   image: {fileID: 21300000, guid: f45d876685c4ed6459098876487f62bd, type: 3}
-  traits: 1500000017000000
+  traits: 1600000001000000
   cost: 1
-  tier: 0

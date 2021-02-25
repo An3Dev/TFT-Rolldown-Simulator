@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: Brand
   m_EditorClassIdentifier: 
   championName: Brand
-  description: 
-  image: {fileID: 21300000, guid: 9e85c6a4d79f4cf44a67f80c295fe563, type: 3}
-  traits: 020000000f000000
+  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  traits: 0700000011000000
   cost: 1
-  tier: 0
