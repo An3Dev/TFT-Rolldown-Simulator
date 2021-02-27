@@ -95,16 +95,16 @@ public class Card : MonoBehaviour
     {
         this.traits = traits;
 
-
-        if (traitsText.Length == 0 || traitsText == null || traitImages.Length == 0 || traitImages == null)
+        // if don't have text or trait images
+        if ((traitsText.Length == 0 || traitsText == null) && (traitImages.Length == 0 || traitImages == null))
             return;
 
-
+        // iterate through each trait that this card has
         for (int i = 0; i < traits.Length; i++)
         {
             if (i == 2)
             {
-                Transform parent = traitsText[2].transform.parent;
+                Transform parent = traitImages[2].transform.parent.parent;
                 for (int x = 0; x < parent.childCount; x++)
                 {
                     parent.GetChild(x).gameObject.SetActive(true);
@@ -112,16 +112,22 @@ public class Card : MonoBehaviour
             }
 
             // set trait text
-            traitsText[i].text = traits[i].ToString();
+            if(traitsText.Length > i)
+                traitsText[i].text = traits[i].ToString();
 
-            int indexOfTrait = (int)traits[i];
-            Sprite traitIcon = UIStorage.GetTraitIcons()[indexOfTrait];
-            // set trait icon
-            traitImages[i].sprite = traitIcon;
+            if (traitImages.Length > i)
+            {
+                int indexOfTrait = (int)traits[i];
+                Sprite traitIcon = UIStorage.GetTraitIcons()[indexOfTrait];
+                // set trait icon
+                traitImages[i].sprite = traitIcon;
+            }          
         }
+
+        // disable pictures and text of this ui because we don't want to diplay it
         if (traits.Length < 3)
         {
-            Transform parent = traitsText[2].transform.parent;
+            Transform parent = traitImages[2].transform.parent.parent;
             for (int x = 0; x < parent.childCount; x++)
             {
                 parent.GetChild(x).gameObject.SetActive(false);
