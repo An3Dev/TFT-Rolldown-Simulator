@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Olaf
   m_EditorClassIdentifier: 
   championName: Olaf
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 3dd177d5882fb8e46b3ebc02924b3116, type: 3}
   traits: 0700000015000000
   cost: 4

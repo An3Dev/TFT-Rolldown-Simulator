@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Braum
   m_EditorClassIdentifier: 
   championName: Braum
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 2d26a057530b9c74dbd443aab60f867a, type: 3}
   traits: 0700000019000000
   cost: 2

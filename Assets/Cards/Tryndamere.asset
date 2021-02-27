@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Tryndamere
   m_EditorClassIdentifier: 
   championName: Tryndamere
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: d3653ffa27e084445a46d3bb0667d6d6, type: 3}
   traits: 1a0000001500000008000000
   cost: 4

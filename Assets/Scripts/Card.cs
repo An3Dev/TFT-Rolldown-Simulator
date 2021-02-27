@@ -40,12 +40,19 @@ public class Card : MonoBehaviour
     public void SetName(string name)
     {
         this.name = name;
+        if (!cardNameText)
+            return;
         cardNameText.text = name;
     }
 
     public void SetImage(Sprite image)
     {
         championImage.sprite = image;
+    }
+
+    public Sprite GetImage()
+    {
+        return championImage.sprite;
     }
 
     public void SetCost(int cost)
@@ -87,11 +94,23 @@ public class Card : MonoBehaviour
     public void SetTraits(Trait[] traits)
     {
         this.traits = traits;
+
+
         if (traitsText.Length == 0 || traitsText == null || traitImages.Length == 0 || traitImages == null)
             return;
 
-        for(int i = 0; i < traits.Length; i++)
+
+        for (int i = 0; i < traits.Length; i++)
         {
+            if (i == 2)
+            {
+                Transform parent = traitsText[2].transform.parent;
+                for (int x = 0; x < parent.childCount; x++)
+                {
+                    parent.GetChild(x).gameObject.SetActive(true);
+                }
+            }
+
             // set trait text
             traitsText[i].text = traits[i].ToString();
 
@@ -99,6 +118,14 @@ public class Card : MonoBehaviour
             Sprite traitIcon = UIStorage.GetTraitIcons()[indexOfTrait];
             // set trait icon
             traitImages[i].sprite = traitIcon;
+        }
+        if (traits.Length < 3)
+        {
+            Transform parent = traitsText[2].transform.parent;
+            for (int x = 0; x < parent.childCount; x++)
+            {
+                parent.GetChild(x).gameObject.SetActive(false);
+            }
         }
     }
 

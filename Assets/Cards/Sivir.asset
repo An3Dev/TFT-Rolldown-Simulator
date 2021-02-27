@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Sivir
   m_EditorClassIdentifier: 
   championName: Sivir
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 62055f0343e6bca4ca491b19d2101cb9, type: 3}
   traits: 0400000014000000
   cost: 3

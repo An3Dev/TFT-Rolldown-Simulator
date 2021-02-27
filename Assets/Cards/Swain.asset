@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Swain
   m_EditorClassIdentifier: 
   championName: Swain
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 5b0dc6ef144d93c4a85edcfe865bbffb, type: 3}
   traits: 0700000017000000
   cost: 5

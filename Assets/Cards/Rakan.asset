@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Rakan
   m_EditorClassIdentifier: 
   championName: Rakan
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 2c11a33454a626e43840356d8e5dba64, type: 3}
   traits: 0900000010000000
   cost: 2

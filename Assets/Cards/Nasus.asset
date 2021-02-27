@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Nasus
   m_EditorClassIdentifier: 
   championName: Nasus
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: fe6007499a060f9448c8fde9ae43b00d, type: 3}
   traits: 0600000017000000
   cost: 1

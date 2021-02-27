@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Kayle
   m_EditorClassIdentifier: 
   championName: Kayle
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 252ed1e0f4abdad4f8c2b3ea0cc33b46, type: 3}
   traits: 060000000c000000
   cost: 4

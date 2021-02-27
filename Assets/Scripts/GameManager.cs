@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Linq;
+using System;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,14 +15,25 @@ public class GameManager : MonoBehaviour
     public GameObject championSelectionButtonPrefab;
     public Transform championSelectionButtonParent;
 
+    public GameObject championSelectionListParent;
+    public GameObject startButton, restartButton;
+
     public ChampionCard[] allChampions;
     List<ChampionCard> oneCostChamps, twoCostChamps, threeCostChamps, fourCostChamps, fiveCostChamps;
+    public TextMeshProUGUI[] probabilityText;
+
+    public GameObject[] objectsToDisableOnPlay;
+
+    public Card[] selectedCardsUIArray;
 
     public int level = 1;
 
     int maxSelectedCards = 10;
 
     List<Card> selectedCards = new List<Card>();
+
+    [SerializeField]
+    int score = 0;
 
     int[,] probabilities = new int[,] 
         { 
@@ -79,35 +92,103 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // create champion selection buttons and populate them
-        for(int i = 0; i < allChampions.Length; i++)
+
+        CreateChampionSelectionButtons();
+
+        SetProbabilityText();
+        SetLevelText();
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RefreshCardSlots();
+        }
+    }
+
+    public void CreateChampionSelectionButtons()
+    {
+        for (int i = 0; i < allChampions.Length; i++)
         {
             Card card = Instantiate(championSelectionButtonPrefab, championSelectionButtonParent).GetComponent<Card>();
             card.SetCost(allChampions[i].cost);
             card.SetName(allChampions[i].name);
             card.SetTraits(allChampions[i].traits);
             card.SetImage(allChampions[i].image);
+
             card.SetIndexInSelectionList(i);
             championSelectionCardsList.Add(card);
         }
     }
 
+    public void OnClickStart()
+    {
+        championSelectionListParent.SetActive(false);
+        // spawn the cards.
+        RefreshCardSlots();
+        DisablePreGameObjects(true);
+
+        PopulateSelectedCardsUI();
+    }
+
+    void PopulateSelectedCardsUI()
+    {
+        //this array holds the card instances 
+        for (int i = 0; i < selectedCardsUIArray.Length; i++)
+        {
+            // if the number of selected cards is less than the current card slot number
+            if (selectedCards.Count == i)
+            {
+                //disable the rest of the cards
+                for (int x = i; x < selectedCardsUIArray.Length; x++)
+                {
+                    selectedCardsUIArray[x].gameObject.SetActive(false);
+                }
+                return;
+            }
+            selectedCardsUIArray[i].gameObject.SetActive(true);
+            selectedCardsUIArray[i].SetImage(selectedCards[i].GetImage());
+            //selectedCardsUIArray[i].SetName(selectedCards[i].GetName());
+        }
+    }
+
+    public void OnClickRestart()
+    {
+        championSelectionListParent.SetActive(true);
+        DisablePreGameObjects(false);
+
+        // disable cards
+        for (int i = 0; i < cardSlotArray.Length; i++)
+        {
+            cardSlotArray[i].gameObject.SetActive(false);
+        }
+    }
+
+    public void DisablePreGameObjects(bool disable)
+    {
+        for (int i = 0; i < objectsToDisableOnPlay.Length; i++)
+        {
+            objectsToDisableOnPlay[i].gameObject.SetActive(!disable);
+        }
+    }
+
     public void OnSelectedChampion(int index)
     {
-
         Card card = championSelectionCardsList[index];
-        print("Selected " + card.GetName());
 
         // add this card to selected cards
         selectedCards.Add(card);
+
+        if (selectedCards.Count > 0)
+        {
+            startButton.SetActive(true);
+        }
 
         if (selectedCards.Count >= maxSelectedCards)
         {
             // disable selection
             DisableCardSelection(true);
         }
-        // populate and enable card
-
     }
 
     void DisableCardSelection(bool disable)
@@ -128,12 +209,16 @@ public class GameManager : MonoBehaviour
 
     }
 
-
     public void OnDeselectedChampion(int index)
     {
         Card card = championSelectionCardsList[index];
         // add this card to selected cards
         selectedCards.Remove(card);
+
+        if (selectedCards.Count <= 0)
+        {
+            startButton.SetActive(false);
+        }
 
         // if cards list was previously at max capacity
         if (selectedCards.Count + 1 >= maxSelectedCards)
@@ -141,38 +226,70 @@ public class GameManager : MonoBehaviour
             // enable selection
             DisableCardSelection(false);
         }
-
-        // disable the UI card
-
     }
 
-    private void Update()
+    public void OnChangeLevel(Single level)
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        this.level = (int)level;
+        SetLevelText();
+        SetProbabilityText();
+    }
+
+    void SetLevelText()
+    {
+        levelText.text = level.ToString();
+    }
+
+    void SetProbabilityText()
+    {
+        for(int i = 0; i < probabilityText.Length; i++)
         {
-            RefreshCardSlots();
+            probabilityText[i].text = $"• {probabilities[level-1, i]}%";
         }
     }
+    public void SetLevel(int level)
+    {
+        this.level = level;
+    }
+
 
     public void OnCardClicked(int indexInDeck)
     {
-        print(cardSlotArray[indexInDeck].GetName());
-
         // do some logic to calculate whether this was a correct click, incorrect click, or missed click
+
+        Card card = cardSlotArray[indexInDeck];
+        Trait[] traits = card.GetTraits();
+
+        // iterate through this card's traits
+        for(int i = 0; i < traits.Length; i++)
+        {
+            // iterate through all selected cards
+            for (int x = 0; x < selectedCards.Count; x++)
+            {
+                Card selectedCard = selectedCards[i];
+                Trait[] selectedCardTraits = selectedCard.GetTraits();
+
+                for (int z = 0; z < selectedCardTraits.Length; z++)
+                {
+                    if (selectedCardTraits[z].Equals(traits[i]))
+                    {
+                        score++;
+                        print(selectedCardTraits[z] + " matches with " + traits[i]);
+                        break;
+                    }
+                }
+            }
+        }
 
         cardSlotArray[indexInDeck].gameObject.SetActive(false);
     }
 
-    public void OnClickStart() {
-        print("Start button clicked");
 
-        // spawn the cards.
-        RefreshCardSlots();
-    }
-
-    public void SetLevel(int level)
+    public void OnClickRefresh()
     {
-        this.level = level;
+        RefreshCardSlots();
+
+        // check for missed cards
     }
 
     public void RefreshCardSlots()

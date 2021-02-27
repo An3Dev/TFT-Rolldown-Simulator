@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Shyvana
   m_EditorClassIdentifier: 
   championName: Shyvana
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 5ef456ae2d480d64c8a190b81843fac9, type: 3}
   traits: 0700000003000000
   cost: 3

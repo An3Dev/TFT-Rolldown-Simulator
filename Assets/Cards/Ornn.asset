@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Ornn
   m_EditorClassIdentifier: 
   championName: Ornn
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: f5eae9f1cc6162449a3463d21b54e928, type: 3}
   traits: 090000001900000002000000
   cost: 5

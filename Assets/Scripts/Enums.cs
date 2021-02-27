@@ -2,28 +2,28 @@
 {
     Adept,
     Assassin,
-    Blacksmith, // missing
+    Blacksmith,
     Brawler,
     Cultist,
-    Daredevil, // missing
+    Daredevil,
     Divine,
-    Dragonsoul, // missing
+    Dragonsoul,
     Duelist,
     Elderwood,
     Emperor,
     Enlightened,
-    Executioner, // missing
+    Executioner,
     Exile,
-    Fabled, // missing
+    Fabled,
     Fortune,
     Keeper,
     Mage,
     Mystic,
     Ninja,
     Sharpshooter,
-    Slayer, // missing
+    Slayer,
     Spirit,
-    Syphoner, // missing
+    Syphoner,
     TheBoss,
     Vanguard,
     Warlord

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Xayah
   m_EditorClassIdentifier: 
   championName: Xayah
-  image: {fileID: 21300000, guid: c605e69493e10de469f56e02e9a8d795, type: 3}
+  image: {fileID: 21300000, guid: 5670576bca85d514aa1f5e8429603b79, type: 3}
   traits: 090000000c00000010000000
   cost: 4
