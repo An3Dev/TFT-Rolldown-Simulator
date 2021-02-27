@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
 
     public int level = 1;
 
-    int maxSelectedCards = 10;
+    int maxSelectedCards = 9;
 
     List<Card> selectedCards = new List<Card>();
 
@@ -128,13 +128,23 @@ public class GameManager : MonoBehaviour
         if (start && timerAmount != 0)
         {
             timer -= Time.deltaTime;
-            timerCountdownText.text = timer.ToString("F1");
+
             if (timer <= 0)
             {
+                timerCountdownText.text = "0.0";
+
                 // stop the timer
                 start = false;
                 DisableCardsInSlots();
+            } else
+            {
+                timerCountdownText.text = timer.ToString("F1");
+
             }
+
+        } else
+        {
+            timerCountdownText.gameObject.SetActive(false);
         }
     }
 
@@ -384,7 +394,7 @@ public class GameManager : MonoBehaviour
                     if (previouslyChosenCardTraits[previouslyChosenCardTraitIndex].Equals(traits[clickedCardTraitIndex]))
                     {
                         
-                        print(previouslyChosenCardTraits[previouslyChosenCardTraitIndex] + " matches with " + traits[clickedCardTraitIndex]);
+                        //print(previouslyChosenCardTraits[previouslyChosenCardTraitIndex] + " matches with " + traits[clickedCardTraitIndex]);
                         return true;
                     }
                 }
@@ -398,7 +408,8 @@ public class GameManager : MonoBehaviour
 
     public void OnClickRefresh()
     {
-
+        if (!start)
+            return;
         // Check for missed cards
         // iterate through all cards in the deck
         for (int i = 0; i < cardSlotArray.Length; i++)
