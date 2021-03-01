@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public TextMeshProUGUI levelText, scoreText, correctCardNumText, incorrectCardNumText, missedCardsNumText;
+    public TextMeshProUGUI levelText, scoreText, correctCardNumText, incorrectCardNumText, missedCardsNumText, refreshesNumText;
     public Card[] cardSlotArray; // assign these in the inspector. These are the cards that are in the slots
     public List<Card> championSelectionCardsList = new List<Card>();
     public GameObject championSelectionButtonPrefab;
@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     List<Card> selectedCards = new List<Card>();
 
-    int score = 0, correctCardsNum, incorrectCardsNum, missedCardsNum;
+    int score = 0, correctCardsNum, incorrectCardsNum, missedCardsNum, refreshesNum;
 
     float timerAmount = 30;
 
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
             OnClickRestart();
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S) && !start)
         {
             OnClickStart();
         }
@@ -189,6 +189,19 @@ public class GameManager : MonoBehaviour
 
     public void OnClickStart()
     {
+
+        if (selectedCards.Count > 0)
+        {
+            startButton.SetActive(true);
+            disabledStartButton.SetActive(false);
+        }
+        else
+        {
+            disabledStartButton.SetActive(true);
+            startButton.SetActive(false);
+            return;
+        }
+
         start = true;
         championSelectionListParent.SetActive(false);
 
@@ -197,6 +210,8 @@ public class GameManager : MonoBehaviour
         correctCardsNum = 0;
         incorrectCardsNum = 0;
         missedCardsNum = 0;
+        refreshesNum = 0;
+        timer = timerAmount;
         SetScoreText();
 
         // spawn the cards.
@@ -244,6 +259,17 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < selectedCardsUIArray.Length; i++)
         {
             selectedCardsUIArray[i].gameObject.SetActive(false);
+        }
+
+        if (selectedCards.Count > 0)
+        {
+            startButton.SetActive(true);
+            disabledStartButton.SetActive(false);
+        }
+        else
+        {
+            disabledStartButton.SetActive(true);
+            startButton.SetActive(false);
         }
     }
 
@@ -419,6 +445,7 @@ public class GameManager : MonoBehaviour
                 continue;
 
             // if the current card would be a correct pick, then the user missed this card.
+            // currently subtracts one point for every missed card.
             if (IsChoiceCorrect(cardSlotArray[i]))
             {
                 print("Missed a card");
@@ -426,6 +453,9 @@ public class GameManager : MonoBehaviour
                 ChangeScore(-1);
             }
         }
+
+        refreshesNum++;
+        refreshesNumText.text = refreshesNum.ToString();
 
         RefreshCardSlots();
     }
@@ -447,6 +477,7 @@ public class GameManager : MonoBehaviour
         correctCardNumText.text = correctCardsNum.ToString();
         incorrectCardNumText.text = incorrectCardsNum.ToString();
         missedCardsNumText.text = missedCardsNum.ToString();
+        refreshesNumText.text = refreshesNum.ToString();
     }
 
     public void RefreshCardSlots()
