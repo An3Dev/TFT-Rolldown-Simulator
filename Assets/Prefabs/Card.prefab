@@ -1309,6 +1309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -1385,7 +1386,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 12.1, y: 8.9}
-  m_SizeDelta: {x: 126.97, y: 27.5}
+  m_SizeDelta: {x: 173.28, y: 27.5}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &6183799073384943209
 CanvasRenderer:
@@ -1415,7 +1416,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Azir
+  m_text: Cho'Gath
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 114cc8269008f844dbbf98050655e533, type: 2}
   m_sharedMaterial: {fileID: 7418519862336921278, guid: 114cc8269008f844dbbf98050655e533, type: 2}
