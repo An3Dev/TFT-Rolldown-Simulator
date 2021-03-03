@@ -5,15 +5,18 @@ using TMPro;
 using System.Linq;
 using System;
 using Random = UnityEngine.Random;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public TextMeshProUGUI levelText, scoreText, correctCardNumText, incorrectCardNumText, missedCardsNumText, refreshesNumText;
-    public Card[] cardSlotArray; // assign these in the inspector. These are the cards that are in the slots
+    public Card[] cardSlotArray; /* assign these in the inspector. These are the cards that are in the slots */
     public List<Card> championSelectionCardsList = new List<Card>();
     public GameObject championSelectionButtonPrefab;
     public Transform championSelectionButtonParent;
+
+    public Slider timeSlider;
 
     public GameObject championSelectionListParent;
     public GameObject startButton, restartButton, disabledStartButton;
@@ -26,26 +29,26 @@ public class GameManager : MonoBehaviour
     public GameObject[] objectsToEnableOnPlay;
 
     public Card[] selectedCardsUIArray;
-
+    public GridLayoutGroup gridLayoutGroup;
 
     public int level = 1;
 
-    int maxSelectedCards = 9;
+    int maxSelectedCards = 58;
 
     List<Card> selectedCards = new List<Card>();
 
     int score = 0, correctCardsNum, incorrectCardsNum, missedCardsNum, refreshesNum;
 
-    float timerAmount = 30;
+    float timerAmountInSeconds = 30;
 
     float timer;
-    public TextMeshProUGUI timerSetupText, timerCountdownText;
+    public TextMeshProUGUI timerSetupText, timerUnitsText, timerCountdownText;
 
     bool start = false;
 
     int[,] probabilities = new int[,] 
         { 
-            { 100, 0, 0, 0, 0 }, // level 1
+            { 100, 0, 0, 0, 0 }, /* level 1 */
             { 100, 0, 0, 0, 0 }, 
             { 75, 25, 0, 0, 0 },
             { 55, 30, 15, 0, 0 }, 
@@ -53,7 +56,7 @@ public class GameManager : MonoBehaviour
             { 35, 35, 25, 5, 0 }, 
             { 22, 35, 30, 12, 1 },
             { 15, 25, 35, 20, 5 }, 
-            { 10, 15, 30, 30, 15 } // level 9   
+            { 10, 15, 30, 30, 15 } /* level 9  */
         };
 
     private void Awake()
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour
         fourCostChamps = new List<ChampionCard>();
         fiveCostChamps = new List<ChampionCard>();
 
-        // populate the cost arrays
+        /* populate the cost arrays*/
         for (int i = 0; i < allChampions.Length; i++)
         {
             if (allChampions[i].cost == 1)
@@ -124,8 +127,8 @@ public class GameManager : MonoBehaviour
             OnClickStart();
         }
 
-        // timer logic
-        if (start && timerAmount != 0)
+        /* timer logic*/
+        if (start && timerAmountInSeconds != 0)
         {
             timer -= Time.deltaTime;
 
@@ -133,13 +136,12 @@ public class GameManager : MonoBehaviour
             {
                 timerCountdownText.text = "0.0";
 
-                // stop the timer
+                /* stop the timer */
                 start = false;
                 DisableCardsInSlots();
             } else
             {
                 timerCountdownText.text = timer.ToString("F1");
-
             }
 
         } else
@@ -161,14 +163,22 @@ public class GameManager : MonoBehaviour
         if (value <= 0)
         {
             timerSetupText.text = "Disabled";
-            timerSetupText.transform.GetChild(0).gameObject.SetActive(false);
-            timerAmount = 0;
+            timerUnitsText.gameObject.SetActive(false);
+            timerAmountInSeconds = 0;
         } else
         {
-            timerSetupText.transform.GetChild(0).gameObject.SetActive(true);
+            if (value < 60)
+            {
+                timerUnitsText.text = "secs";
+            } else
+            {
+                timerUnitsText.text = "mins";
+            }
+            
+            timerUnitsText.gameObject.SetActive(true);
             timerSetupText.text = value.ToString();
-            timerAmount = value;
-            timer = timerAmount;
+            timerAmountInSeconds = value;
+            timer = timerAmountInSeconds;
         }
     }
 
@@ -205,16 +215,16 @@ public class GameManager : MonoBehaviour
         start = true;
         championSelectionListParent.SetActive(false);
 
-        // reset the scores
+        /* reset the scores */
         score = 0;
         correctCardsNum = 0;
         incorrectCardsNum = 0;
         missedCardsNum = 0;
         refreshesNum = 0;
-        timer = timerAmount;
+        timer = timerAmountInSeconds;
         SetScoreText();
 
-        // spawn the cards.
+        /* spawn the cards. */
         RefreshCardSlots();
         DisablePreStartObjects(true);
         EnablePostStartObjects(true);
@@ -223,13 +233,13 @@ public class GameManager : MonoBehaviour
 
     void PopulateSelectedCardsUI()
     {
-        //this array holds the card instances 
+        /*this array holds the card instances */
         for (int i = 0; i < selectedCardsUIArray.Length; i++)
         {
-            // if the number of selected cards is less than the current card slot number
+            /* if the number of selected cards is less than the current card slot number */
             if (selectedCards.Count == i)
             {
-                //disable the rest of the cards
+                /* disable the rest of the cards */
                 for (int x = i; x < selectedCardsUIArray.Length; x++)
                 {
                     selectedCardsUIArray[x].gameObject.SetActive(false);
@@ -239,7 +249,7 @@ public class GameManager : MonoBehaviour
             selectedCardsUIArray[i].gameObject.SetActive(true);
             selectedCardsUIArray[i].SetImage(selectedCards[i].GetImage());
             selectedCardsUIArray[i].SetTraits(selectedCards[i].GetTraits());
-            //selectedCardsUIArray[i].SetName(selectedCards[i].GetName());
+            selectedCardsUIArray[i].SetName(selectedCards[i].GetName());
         }
     }
 
@@ -249,13 +259,13 @@ public class GameManager : MonoBehaviour
         championSelectionListParent.SetActive(true);
         DisablePreStartObjects(false);
         EnablePostStartObjects(false);
-        // disable cards
+        /* disable cards */
         for (int i = 0; i < cardSlotArray.Length; i++)
         {
             cardSlotArray[i].gameObject.SetActive(false);
         }
 
-        // disable selected cards
+        /* disable selected cards */
         for(int i = 0; i < selectedCardsUIArray.Length; i++)
         {
             selectedCardsUIArray[i].gameObject.SetActive(false);
@@ -293,7 +303,7 @@ public class GameManager : MonoBehaviour
     {
         Card card = championSelectionCardsList[index];
 
-        // add this card to selected cards
+        /*add this card to selected cards */
         selectedCards.Add(card);
 
         if (selectedCards.Count > 0)
@@ -309,7 +319,7 @@ public class GameManager : MonoBehaviour
 
         if (selectedCards.Count >= maxSelectedCards)
         {
-            // disable selection
+            /*disable selection */
             DisableCardSelection(true);
         }
     }
@@ -335,7 +345,7 @@ public class GameManager : MonoBehaviour
     public void OnDeselectedChampion(int index)
     {
         Card card = championSelectionCardsList[index];
-        // add this card to selected cards
+        /* add this card to selected cards */
         selectedCards.Remove(card);
 
         if (selectedCards.Count > 0)
@@ -349,10 +359,10 @@ public class GameManager : MonoBehaviour
             startButton.SetActive(false);
         }
 
-        // if cards list was previously at max capacity
+        /* if cards list was previously at max capacity */
         if (selectedCards.Count + 1 >= maxSelectedCards)
         {
-            // enable selection
+            /* enable selection */
             DisableCardSelection(false);
         }
     }
@@ -384,7 +394,7 @@ public class GameManager : MonoBehaviour
 
     public void OnCardClicked(int indexInDeck)
     {
-        // do some logic to calculate whether this was a correct click, or incorrect
+        /* do some logic to calculate whether this was a correct click, or incorrect*/
         Card card = cardSlotArray[indexInDeck];
 
         if (IsChoiceCorrect(card))
@@ -396,7 +406,7 @@ public class GameManager : MonoBehaviour
             ChangeScore(-1);
         }
 
-        // disable card that was clicked
+        /* disable card that was clicked */
         cardSlotArray[indexInDeck].gameObject.SetActive(false);
     }
 
@@ -404,30 +414,28 @@ public class GameManager : MonoBehaviour
     {
         Trait[] traits = card.GetTraits();
 
-        // iterate through clicked card's traits
+        /* iterate through clicked card's traits */
         for (int clickedCardTraitIndex = 0; clickedCardTraitIndex < traits.Length; clickedCardTraitIndex++)
         {
-            // iterate through all cards that were chosen before starting the game.
+            /* iterate through all cards that were chosen before starting the game. */
             for (int previouslyChosenCardIndex = 0; previouslyChosenCardIndex < selectedCards.Count; previouslyChosenCardIndex++)
             {
                 Card previouslyChosenCard = selectedCards[previouslyChosenCardIndex];
                 Trait[] previouslyChosenCardTraits = previouslyChosenCard.GetTraits();
 
-                // iterate through the previously chosen card's traits
+                /* iterate through the previously chosen card's traits */
                 for (int previouslyChosenCardTraitIndex = 0; previouslyChosenCardTraitIndex < previouslyChosenCardTraits.Length; previouslyChosenCardTraitIndex++)
                 {
-                    // if this card's trait matches the clicked card's trait
+                    /* if this card's trait matches the clicked card's trait*/
                     if (previouslyChosenCardTraits[previouslyChosenCardTraitIndex].Equals(traits[clickedCardTraitIndex]))
-                    {
-                        
-                        //print(previouslyChosenCardTraits[previouslyChosenCardTraitIndex] + " matches with " + traits[clickedCardTraitIndex]);
+                    {                
                         return true;
                     }
                 }
             }
         }
 
-        // if the code gets to this point, then the cards don't match, and this was an inccorrect choice
+        /* if the code gets to this point, then the cards don't match, and this was an incorrect choice */
         return false;
     }
 
@@ -436,21 +444,21 @@ public class GameManager : MonoBehaviour
     {
         if (!start)
             return;
-        // Check for missed cards
-        // iterate through all cards in the deck
+        /* Check for missed cards
+         iterate through all cards in the deck */
         for (int i = 0; i < cardSlotArray.Length; i++)
         {
-            // if this card is disabled, then skip this card
+            /* if this card is disabled, then skip this card */
             if (!cardSlotArray[i].gameObject.activeInHierarchy)
                 continue;
 
-            // if the current card would be a correct pick, then the user missed this card.
-            // currently subtracts one point for every missed card.
+            /* if the current card would be a correct pick, then the user missed this card. */
             if (IsChoiceCorrect(cardSlotArray[i]))
             {
                 print("Missed a card");
                 missedCardsNum += 1;
                 ChangeScore(-1);
+                break;
             }
         }
 
@@ -482,7 +490,7 @@ public class GameManager : MonoBehaviour
 
     public void RefreshCardSlots()
     {
-        // loops through each card slot
+        /* loops through each card slot */
         for (int i = 0; i < cardSlotArray.Length; i++)
         {
             int cost = 0;
@@ -490,7 +498,7 @@ public class GameManager : MonoBehaviour
             int random = Random.Range(1, 100);
             int lastTotal = 0;
 
-             // get length 1 will return the number of columns
+             /* get length 1 will return the number of columns */
             for(int x = 0; x < probabilities.GetLength(1); x++)
             {
                 int probability = probabilities[level - 1, x];
@@ -502,10 +510,10 @@ public class GameManager : MonoBehaviour
                 lastTotal += probability;
             }
 
-            // this decides what cost card we're going to use
-            //cost = Random.Range(1, 6);
+            /* this decides what cost card we're going to use
+            //cost = Random.Range(1, 6); */
             ChampionCard[] champions;
-            // right here we're choosing which cards to use. It's like having 5 different decks of cards, each having a different cost.
+            /* right here we're choosing which cards to use. It's like having 5 different decks of cards, each having a different cost. */
             if (cost == 1)
             {
                 champions = oneCostChamps.ToArray();
@@ -527,7 +535,7 @@ public class GameManager : MonoBehaviour
                 champions = fiveCostChamps.ToArray();
             }
 
-            // selects random champion from the specific "deck" in which all cards have the same cost
+            /* selects random champion from the specific "deck" in which all cards have the same cost */
             int randomChamp = Random.Range(0, champions.Length);
 
             SetCardUI(cardSlotArray[i], champions[randomChamp], i);         
