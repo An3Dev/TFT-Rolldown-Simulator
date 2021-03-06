@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour
 
     public Card[] selectedCardsUIArray;
     public GridLayoutGroup gridLayoutGroup;
+    public float maxCardWidth = 200;
+    public float minWidth = 100;
+    float cardWidthToHeightRatio = 0.75f;
 
     public int level = 1;
 
@@ -158,28 +161,35 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnChangeTimer(float value)
+    public void OnChangeTimer(float seconds)
     {
-        if (value <= 0)
+        if (seconds <= 0)
         {
             timerSetupText.text = "Disabled";
-            timerUnitsText.gameObject.SetActive(false);
             timerAmountInSeconds = 0;
         } else
         {
-            if (value < 60)
-            {
-                timerUnitsText.text = "secs";
-            } else
-            {
-                timerUnitsText.text = "mins";
-            }
-            
-            timerUnitsText.gameObject.SetActive(true);
-            timerSetupText.text = value.ToString();
-            timerAmountInSeconds = value;
+            timerSetupText.text = seconds.ToString() + " secs";
+            timerAmountInSeconds = seconds;
             timer = timerAmountInSeconds;
         }
+    }
+
+    public void OnEndInputFieldEdit(string text)
+    {
+        text = text.Trim();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            OnChangeTimer(timerAmountInSeconds);
+        } else
+        {
+            if (text.ToLower().Contains("sec"))
+            {
+
+            }
+        }
+
+
     }
 
     public void CreateChampionSelectionButtons()
@@ -229,6 +239,27 @@ public class GameManager : MonoBehaviour
         DisablePreStartObjects(true);
         EnablePostStartObjects(true);
         PopulateSelectedCardsUI();
+
+        ResizeGridLayout();
+    }
+
+    void ResizeGridLayout()
+    {
+        if (selectedCards.Count <= 21)
+        {
+            gridLayoutGroup.cellSize = new Vector2(maxCardWidth, maxCardWidth * cardWidthToHeightRatio);
+        }
+        else if (selectedCards.Count <= 36)
+        {
+            gridLayoutGroup.cellSize = new Vector2(150, 150 * cardWidthToHeightRatio);
+        } else if (selectedCards.Count <= 55)
+        {
+            gridLayoutGroup.cellSize = new Vector2(125, 125 * cardWidthToHeightRatio);
+        } else
+        {
+            gridLayoutGroup.cellSize = new Vector2(114, 114 * cardWidthToHeightRatio);
+
+        }
     }
 
     void PopulateSelectedCardsUI()
@@ -324,6 +355,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+
     void DisableCardSelection(bool disable)
     {
         if (disable)
@@ -339,7 +372,6 @@ public class GameManager : MonoBehaviour
                 championSelectionCardsList[i].EnableSelection();
             }
         }
-
     }
 
     public void OnDeselectedChampion(int index)

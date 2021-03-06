@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5baf1315002025942b7cc3d57a913d86, type: 3}
-  m_Name: Aatrox
+  m_Name: Brand
   m_EditorClassIdentifier: 
-  championName: Aatrox
-  image: {fileID: 21300000, guid: 2864af549ca7146438431e53765d8696, type: 3}
-  traits: 0400000019000000
-  cost: 4
+  championName: Brand
+  image: {fileID: 21300000, guid: 6f0d09e95bab411489b2e1cf748fb728, type: 3}
+  traits: 0700000011000000
+  cost: 1
