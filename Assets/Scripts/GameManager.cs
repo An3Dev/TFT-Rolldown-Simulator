@@ -28,13 +28,14 @@ public class GameManager : MonoBehaviour
     public GameObject[] objectsToDisableOnPlay;
     public GameObject[] objectsToEnableOnPlay;
 
+    [Header("SELECTED CARDS COMPONENTS")]
     public Card[] selectedCardsUIArray;
     public GridLayoutGroup gridLayoutGroup;
     public float maxCardWidth = 200;
     public float minWidth = 100;
     float cardWidthToHeightRatio = 0.75f;
 
-    public int level = 1;
+    int level = 1;
 
     int maxSelectedCards = 58;
 
@@ -42,12 +43,18 @@ public class GameManager : MonoBehaviour
 
     int score = 0, correctCardsNum, incorrectCardsNum, missedCardsNum, refreshesNum;
 
+    [Header("TIMER SETTINGS")]
     float timerAmountInSeconds = 30;
 
     float timer;
     public TextMeshProUGUI timerSetupText, timerUnitsText, timerCountdownText;
 
-    bool start = false;
+    bool startedGame = false;
+
+    [Header("SEARCH BAR COMPONENTS")]
+    public GameObject clearSearchBarTextButton;
+    public TextMeshProUGUI searchBarInputFieldText;
+    public TMP_InputField searchBarInputField;
 
     int[,] probabilities = new int[,] 
         { 
@@ -62,6 +69,11 @@ public class GameManager : MonoBehaviour
             { 10, 15, 30, 30, 15 } /* level 9  */
         };
 
+    bool sortChampionsAlphabetically = true;
+    bool isSearchBarSelected = false;
+    Card[] costSortedCardsArray;
+
+    public int[] secondsInDropdown;
     private void Awake()
     {
         if( Instance != null)
@@ -108,13 +120,49 @@ public class GameManager : MonoBehaviour
 
 
         CreateChampionSelectionButtons();
+        costSortedCardsArray = new Card[championSelectionCardsList.Count];
+        PopulateCostSortedArray();
 
         SetProbabilityText();
         SetLevelText();
     }
 
+    void PopulateCostSortedArray()
+    {
+        // fill it with cards
+        for(int i = 0; i < championSelectionCardsList.Count; i++)
+        {
+            costSortedCardsArray[i] = championSelectionCardsList[i];
+        }
+
+        // sort it by cost
+        int length = costSortedCardsArray.Length;
+        for (int i = 0; i < length - 1; i++)
+        {
+            for (int x = 0; x < length - i - 1; x++)
+            {
+                Card card = costSortedCardsArray[x];
+                int cost = card.GetCost();
+                if (cost > costSortedCardsArray[x + 1].GetCost())
+                {
+                    Card temp = costSortedCardsArray[x];
+                    costSortedCardsArray[x] = costSortedCardsArray[x + 1];
+                    costSortedCardsArray[x + 1] = temp;              
+                }
+            }
+        }
+    }
+
     private void Update()
     {
+        if (!isSearchBarSelected)
+        {
+            if (Input.GetKeyDown(KeyCode.S) && !startedGame)
+            {
+                OnClickStart();
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.D))
         {
             OnClickRefresh();
@@ -125,13 +173,10 @@ public class GameManager : MonoBehaviour
             OnClickRestart();
         }
 
-        if (Input.GetKeyDown(KeyCode.S) && !start)
-        {
-            OnClickStart();
-        }
+       
 
         /* timer logic*/
-        if (start && timerAmountInSeconds != 0)
+        if (startedGame && timerAmountInSeconds != 0)
         {
             timer -= Time.deltaTime;
 
@@ -140,11 +185,15 @@ public class GameManager : MonoBehaviour
                 timerCountdownText.text = "0.0";
 
                 /* stop the timer */
-                start = false;
+                startedGame = false;
                 DisableCardsInSlots();
             } else
             {
-                timerCountdownText.text = timer.ToString("F1");
+                int seconds = (int)timer % 60;
+                int minutes = (int)timer / 60 % 60;
+                //int minutes = (int) timer / 60;
+                //int seconds = (int)minutes % 60 / 60;
+                timerCountdownText.text = $"{minutes.ToString("00")}:{seconds.ToString("00")}";
             }
 
         } else
@@ -158,6 +207,17 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < cardSlotArray.Length; i++) 
         {
             cardSlotArray[i].gameObject.SetActive(false);
+        }
+    }
+
+    public void OnDropdownChanged(Int32 index)
+    {
+        if (index == 0)
+        {
+            timerAmountInSeconds = 0;
+        } else
+        {
+            timerAmountInSeconds = secondsInDropdown[index];
         }
     }
 
@@ -185,12 +245,156 @@ public class GameManager : MonoBehaviour
         {
             if (text.ToLower().Contains("sec"))
             {
-
+                
             }
         }
-
-
     }
+
+    #region Search Bar Code
+
+    public void OnSearchBarSelect()
+    {
+        isSearchBarSelected = true;
+    }
+
+    public void OnSearchBarDeselect()
+    {
+        isSearchBarSelected = false;
+    }
+
+    public void OnSortAlphabeticallyClicked()
+    {
+        print("Sort by alpha");
+        sortChampionsAlphabetically = true;
+        SortUIAlphabetically();
+    }
+
+
+    public void SortUIAlphabetically()
+    {       
+        // the champion selection cards list is already sorted alphabetically.
+        for (int i = 0; i < championSelectionCardsList.Count; i++)
+        {
+            championSelectionCardsList[i].transform.SetSiblingIndex(i);
+        }     
+    }
+
+
+
+    public void OnSortByCostClicked()
+    {
+        print("Sort by cost");
+        sortChampionsAlphabetically = false;
+        SortUIByCost();
+    }
+
+    public void SortUIByCost()
+    {
+        for (int i = 0; i < costSortedCardsArray.Length; i++)
+        {
+            costSortedCardsArray[i].transform.SetSiblingIndex(i);
+        }
+    }
+
+    void UnfilterAllCards()
+    {
+        for (int i = 0; i < championSelectionCardsList.Count; i++)
+        {
+            championSelectionCardsList[i].Unfilter();
+        }
+    }
+    public void OnSearchInputFieldChanged(String input)
+    {
+        input = input.Trim();
+        if (String.IsNullOrEmpty(input))
+        {
+            clearSearchBarTextButton.SetActive(false);
+            // unfilter all cards
+            UnfilterAllCards();
+        } else // if search bar contains input
+        {
+
+            clearSearchBarTextButton.SetActive(true);
+
+            int cost = 0;
+            int.TryParse(input, out cost);
+            
+            // if input is a number
+            if (cost != 0)
+            {
+                print(input + " is a number");
+
+                // loops through all buttons and sets them to filtered if they don't match the input
+                for (int i = 0; i < championSelectionCardsList.Count; i++)
+                {
+                    if (championSelectionCardsList[i].GetCost() == cost)
+                    {
+                        // this cost should be shown and unfiltered
+                        championSelectionCardsList[i].Unfilter();
+                    } else
+                    {
+                        championSelectionCardsList[i].Filter();
+                    }
+                }
+                return;
+            }
+
+            string[] words = input.Split(new string[] { " ", ", ", "," }, StringSplitOptions.RemoveEmptyEntries);
+            
+            List<Card> unsetCards = new List<Card>(championSelectionCardsList);
+            string s = "";
+            for(int i = 0; i < words.Length; i++)
+            {
+                s += words[i] + "\n";
+            }
+
+            for (int i = 0; i < unsetCards.Count; i++)
+            {
+                Card thisCard = unsetCards[i];
+                foreach (string word in words)
+                {
+                    // if card name contains search input
+                    if (thisCard.GetName().ToLower().Contains(word.ToLower()))
+                    {
+                        // this card will not be filtered
+                        thisCard.Unfilter();
+                        break;
+                    }
+
+                    Trait[] traits = thisCard.GetTraits();
+                    bool unfiltered = false;
+                    // if card traits contains search input
+                    foreach (Trait trait in traits)
+                    {
+                        if (trait.ToString().ToLower().Contains(word.ToLower()))
+                        {
+                            thisCard.Unfilter();
+                            unfiltered = true;
+                            break;
+                        }
+                    }      
+                    if (!unfiltered)
+                    {
+                        thisCard.Filter();
+                    } else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void OnClearTextClicked()
+    {
+        print("Clear text");
+        searchBarInputField.SetTextWithoutNotify("");
+        clearSearchBarTextButton.SetActive(false);
+        searchBarInputField.Select();
+        UnfilterAllCards();
+    }
+    #endregion
+
 
     public void CreateChampionSelectionButtons()
     {
@@ -198,12 +402,13 @@ public class GameManager : MonoBehaviour
         {
             Card card = Instantiate(championSelectionButtonPrefab, championSelectionButtonParent).GetComponent<Card>();
             card.SetCost(allChampions[i].cost);
-            card.SetName(allChampions[i].name);
+            card.SetName(allChampions[i].championName);
             card.SetTraits(allChampions[i].traits);
             card.SetImage(allChampions[i].image);
 
             card.SetIndexInSelectionList(i);
             championSelectionCardsList.Add(card);
+            card.transform.name = allChampions[i].championName;
         }
     }
 
@@ -222,7 +427,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        start = true;
+        startedGame = true;
         championSelectionListParent.SetActive(false);
 
         /* reset the scores */
@@ -286,7 +491,7 @@ public class GameManager : MonoBehaviour
 
     public void OnClickRestart()
     {
-        start = false;
+        startedGame = false;
         championSelectionListParent.SetActive(true);
         DisablePreStartObjects(false);
         EnablePostStartObjects(false);
@@ -330,7 +535,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnSelectedChampion(int index)
+    public void OnSelectedChampion(int index)  
     {
         Card card = championSelectionCardsList[index];
 
@@ -444,37 +649,21 @@ public class GameManager : MonoBehaviour
 
     bool IsChoiceCorrect(Card card)
     {
-        Trait[] traits = card.GetTraits();
-
-        /* iterate through clicked card's traits */
-        for (int clickedCardTraitIndex = 0; clickedCardTraitIndex < traits.Length; clickedCardTraitIndex++)
+        for(int i = 0; i < selectedCardsUIArray.Length; i++)
         {
-            /* iterate through all cards that were chosen before starting the game. */
-            for (int previouslyChosenCardIndex = 0; previouslyChosenCardIndex < selectedCards.Count; previouslyChosenCardIndex++)
+            if (card.GetName().Equals(selectedCardsUIArray[i].GetName()))
             {
-                Card previouslyChosenCard = selectedCards[previouslyChosenCardIndex];
-                Trait[] previouslyChosenCardTraits = previouslyChosenCard.GetTraits();
-
-                /* iterate through the previously chosen card's traits */
-                for (int previouslyChosenCardTraitIndex = 0; previouslyChosenCardTraitIndex < previouslyChosenCardTraits.Length; previouslyChosenCardTraitIndex++)
-                {
-                    /* if this card's trait matches the clicked card's trait*/
-                    if (previouslyChosenCardTraits[previouslyChosenCardTraitIndex].Equals(traits[clickedCardTraitIndex]))
-                    {                
-                        return true;
-                    }
-                }
+                return true;
             }
         }
 
-        /* if the code gets to this point, then the cards don't match, and this was an incorrect choice */
         return false;
     }
 
 
     public void OnClickRefresh()
     {
-        if (!start)
+        if (!startedGame)
             return;
         /* Check for missed cards
          iterate through all cards in the deck */
@@ -490,7 +679,6 @@ public class GameManager : MonoBehaviour
                 print("Missed a card");
                 missedCardsNum += 1;
                 ChangeScore(-1);
-                break;
             }
         }
 

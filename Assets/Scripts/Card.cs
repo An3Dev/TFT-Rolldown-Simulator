@@ -9,7 +9,7 @@ public class Card : MonoBehaviour
     public Image championImage, cardFrame;
     public TextMeshProUGUI[] traitsText;
     public Image[] traitImages;
-    public GameObject clickBlocker;
+    public GameObject filterPanel;
 
     bool isSelected = false;
     string name;
@@ -17,6 +17,7 @@ public class Card : MonoBehaviour
     int cost;
     int indexInSelectionList = 0;
     int indexInDeck = 0;
+    bool isFiltered = false;
     public void OnClickCard()
     {
         GameManager.Instance.OnCardClicked(indexInDeck);
@@ -60,26 +61,58 @@ public class Card : MonoBehaviour
         this.cost = cost;
         if (cardFrame == null)
             return;
-        cardFrame.sprite = UIStorage.GetCardFrames()[cost - 1];
+        //cardFrame.sprite = UIStorage.GetCardFrames()[cost - 1];
+        SetFrameColorUI();
     }
+
+    void SetFrameColorUI()
+    {
+        cardFrame.color = UIStorage.GetFrameColor(cost - 1);
+    }
+
+    public int GetCost()
+    {
+        return cost;
+    }
+
 
     public void OnSelect()
     {
         isSelected = true;
+        filterPanel.SetActive(false);
         GameManager.Instance.OnSelectedChampion(indexInSelectionList);
     }
 
     public void OnDeselect()
     {
         isSelected = false;
+        if (isFiltered)
+        {
+            filterPanel.SetActive(true);
+        }
         GameManager.Instance.OnDeselectedChampion(indexInSelectionList);
     }
 
+
+    public void Filter()
+    {
+        isFiltered = false;
+        if (!isSelected)
+        {
+            filterPanel.SetActive(true);
+        }
+    }
+
+    public void Unfilter()
+    {
+        isFiltered = false;
+        filterPanel.SetActive(false);
+    }
     public void DisableSelection()
     {
         if (!isSelected)
         {
-            clickBlocker.gameObject.SetActive(true);
+            filterPanel.gameObject.SetActive(true);
         }
     }
 
@@ -87,7 +120,7 @@ public class Card : MonoBehaviour
     {
         if (!isSelected)
         {
-            clickBlocker.gameObject.SetActive(false);
+            filterPanel.gameObject.SetActive(false);
         }
     }
 
