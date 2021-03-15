@@ -74,6 +74,8 @@ public class GameManager : MonoBehaviour
     Card[] costSortedCardsArray;
 
     public int[] secondsInDropdown;
+
+    bool inSettings = false;
     private void Awake()
     {
         if( Instance != null)
@@ -153,22 +155,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void OpenedSettings(bool opened)
+    {
+        inSettings = opened;
+    }
+
     private void Update()
     {
+        if (inSettings)
+            return;
+
         if (!isSearchBarSelected)
         {
-            if (Input.GetKeyDown(KeyCode.S) && !startedGame)
+            if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.StartGame)) && !startedGame)
             {
                 OnClickStart();
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.Refresh)))
         {
             OnClickRefresh();
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.Restart)))
         {
             OnClickRestart();
         }
