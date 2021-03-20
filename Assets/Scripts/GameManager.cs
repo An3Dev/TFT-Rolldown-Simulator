@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject championSelectionButtonPrefab;
     public Transform championSelectionButtonParent;
 
-    public Slider timeSlider;
+    public TMP_Dropdown timerDropdown;
 
     public GameObject championSelectionListParent;
     public GameObject startButton, restartButton, disabledStartButton;
@@ -76,6 +76,8 @@ public class GameManager : MonoBehaviour
     public int[] secondsInDropdown;
 
     bool inSettings = false;
+    private const string timerPreferenceKey = "TimerPreferenceKey";
+
     private void Awake()
     {
         if( Instance != null)
@@ -127,6 +129,9 @@ public class GameManager : MonoBehaviour
 
         SetProbabilityText();
         SetLevelText();
+
+        //print(PlayerPrefs.GetInt(timerPreferenceKey, 1));
+        timerDropdown.SetValueWithoutNotify(PlayerPrefs.GetInt(timerPreferenceKey, 1));
     }
 
     void PopulateCostSortedArray()
@@ -165,13 +170,7 @@ public class GameManager : MonoBehaviour
         if (inSettings)
             return;
 
-        if (!isSearchBarSelected)
-        {
-            if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.StartGame)) && !startedGame)
-            {
-                OnClickStart();
-            }
-        }
+
 
         if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.Refresh)))
         {
@@ -183,8 +182,13 @@ public class GameManager : MonoBehaviour
             OnClickRestart();
         }
 
-       
-
+        if (!isSearchBarSelected)
+        {
+            if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.StartGame)) && !startedGame)
+            {
+                OnClickStart();
+            }
+        }
         /* timer logic*/
         if (startedGame && timerAmountInSeconds != 0)
         {
@@ -201,8 +205,6 @@ public class GameManager : MonoBehaviour
             {
                 int seconds = (int)timer % 60;
                 int minutes = (int)timer / 60 % 60;
-                //int minutes = (int) timer / 60;
-                //int seconds = (int)minutes % 60 / 60;
                 timerCountdownText.text = $"{minutes.ToString("00")}:{seconds.ToString("00")}";
             }
 
@@ -220,7 +222,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnDropdownChanged(Int32 index)
+    public void OnDropdownChanged(int index)
     {
         if (index == 0)
         {
@@ -229,6 +231,8 @@ public class GameManager : MonoBehaviour
         {
             timerAmountInSeconds = secondsInDropdown[index];
         }
+        //print("Changed: " + index);
+        PlayerPrefs.SetInt(timerPreferenceKey, index);
     }
 
     public void OnChangeTimer(float seconds)
@@ -279,7 +283,6 @@ public class GameManager : MonoBehaviour
         SortUIAlphabetically();
     }
 
-
     public void SortUIAlphabetically()
     {       
         // the champion selection cards list is already sorted alphabetically.
@@ -288,8 +291,6 @@ public class GameManager : MonoBehaviour
             championSelectionCardsList[i].transform.SetSiblingIndex(i);
         }     
     }
-
-
 
     public void OnSortByCostClicked()
     {
@@ -641,6 +642,8 @@ public class GameManager : MonoBehaviour
 
     public void OnCardClicked(int indexInDeck)
     {
+        SoundManager.Instance.PlaySelectCardSFX();
+
         /* do some logic to calculate whether this was a correct click, or incorrect*/
         Card card = cardSlotArray[indexInDeck];
 
@@ -670,11 +673,12 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-
     public void OnClickRefresh()
     {
         if (!startedGame)
             return;
+
+        SoundManager.Instance.PlayRefreshSFX();
         /* Check for missed cards
          iterate through all cards in the deck */
         for (int i = 0; i < cardSlotArray.Length; i++)

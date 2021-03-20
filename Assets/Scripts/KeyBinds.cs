@@ -14,6 +14,7 @@ public class KeyBinds : MonoBehaviour
     }
 
     public TextMeshProUGUI[] buttonText; // order matters
+    public TextMeshProUGUI startKeybindText, refreshKeybindText, restartKeybindText;
 
     static Dictionary<Action, KeyCode> keybinds = new Dictionary<Action, KeyCode>();
 
@@ -32,7 +33,6 @@ public class KeyBinds : MonoBehaviour
         {
             Instance = this;
         }
-        //PlayerPrefs.DeleteAll();
     }
     private void Start()
     {
@@ -56,6 +56,12 @@ public class KeyBinds : MonoBehaviour
         {
             buttonText[i].text = keybinds[(Action)i].ToString();
         }
+
+        startKeybindText.text = $"({keybinds[Action.StartGame]})";
+        refreshKeybindText.text = $"({keybinds[Action.Refresh]})";
+
+        restartKeybindText.text = $"({keybinds[Action.Restart]})";
+
     }
 
     public static KeyCode GetKeyBind(Action action)

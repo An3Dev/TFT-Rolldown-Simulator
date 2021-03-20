@@ -96,7 +96,7 @@ public class Card : MonoBehaviour
 
     public void Filter()
     {
-        isFiltered = false;
+        isFiltered = true;
         if (!isSelected)
         {
             filterPanel.SetActive(true);
