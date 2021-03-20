@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using Random = UnityEngine.Random;
 using UnityEngine.UI;
+using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
@@ -132,6 +133,26 @@ public class GameManager : MonoBehaviour
 
         //print(PlayerPrefs.GetInt(timerPreferenceKey, 1));
         timerDropdown.SetValueWithoutNotify(PlayerPrefs.GetInt(timerPreferenceKey, 1));
+    }
+
+    public void OpenLinkJSPlugin(string link)
+    {
+#if !UNITY_EDITOR
+		openWindow(link);
+#endif
+    }
+
+    [DllImport("__Internal")]
+    private static extern void openWindow(string url);
+
+    public void OpenLink(string link)
+    {
+#if UNITY_EDITOR
+        Application.OpenURL(link);
+        return;
+#endif
+        OpenLinkJSPlugin(link);
+
     }
 
     void PopulateCostSortedArray()
@@ -264,7 +285,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #region Search Bar Code
+#region Search Bar Code
 
     public void OnSearchBarSelect()
     {
@@ -404,7 +425,7 @@ public class GameManager : MonoBehaviour
         searchBarInputField.Select();
         UnfilterAllCards();
     }
-    #endregion
+#endregion
 
 
     public void CreateChampionSelectionButtons()
