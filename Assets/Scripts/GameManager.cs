@@ -135,12 +135,7 @@ public class GameManager : MonoBehaviour
         timerDropdown.SetValueWithoutNotify(PlayerPrefs.GetInt(timerPreferenceKey, 1));
     }
 
-    public void OpenLinkJSPlugin(string link)
-    {
-#if !UNITY_EDITOR
-		openWindow(link);
-#endif
-    }
+
 
     [DllImport("__Internal")]
     private static extern void openWindow(string url);
@@ -153,6 +148,14 @@ public class GameManager : MonoBehaviour
 #endif
         OpenLinkJSPlugin(link);
 
+    }
+    public void OpenLinkJSPlugin(string link)
+    {
+#if !UNITY_EDITOR
+		openWindow(link);
+		
+
+#endif
     }
 
     void PopulateCostSortedArray()
