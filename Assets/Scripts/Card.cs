@@ -10,7 +10,7 @@ public class Card : MonoBehaviour
     public TextMeshProUGUI[] traitsText;
     public Image[] traitImages;
     public GameObject filterPanel;
-
+    public GameObject selectionImage;
     bool isSelected = false;
     string name;
     Trait[] traits;
@@ -78,9 +78,19 @@ public class Card : MonoBehaviour
 
     public void OnSelect()
     {
-        isSelected = true;
-        filterPanel.SetActive(false);
-        GameManager.Instance.OnSelectedChampion(indexInSelectionList);
+
+        if (!isSelected)
+        {
+            isSelected = true;
+            filterPanel.SetActive(false);
+            selectionImage.SetActive(true);
+            cardFrame.gameObject.SetActive(false);
+            GameManager.Instance.OnSelectedChampion(indexInSelectionList);
+        } else
+        {
+            OnDeselect();
+        }
+
     }
 
     public void OnDeselect()
@@ -90,6 +100,9 @@ public class Card : MonoBehaviour
         {
             filterPanel.SetActive(true);
         }
+        selectionImage.SetActive(false);
+        cardFrame.gameObject.SetActive(true);
+
         GameManager.Instance.OnDeselectedChampion(indexInSelectionList);
     }
 

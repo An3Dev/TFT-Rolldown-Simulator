@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
             { 10, 15, 30, 30, 15 } /* level 9  */
         };
 
-    bool sortChampionsAlphabetically = true;
+    bool sortChampionsAlphabetically = false;
     bool isSearchBarSelected = false;
     Card[] costSortedCardsArray;
 
@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
         CreateChampionSelectionButtons();
         costSortedCardsArray = new Card[championSelectionCardsList.Count];
         PopulateCostSortedArray();
-
+        OnSortByCostClicked();
         SetProbabilityText();
         SetLevelText();
 
@@ -636,6 +636,14 @@ public class GameManager : MonoBehaviour
         {
             /* enable selection */
             DisableCardSelection(false);
+        }
+    }
+
+    public void DeselectAllSelectionButtons()
+    {
+        for(int i = 0; i < championSelectionCardsList.Count; i++)
+        {
+            championSelectionCardsList[i].OnDeselect();
         }
     }
 
