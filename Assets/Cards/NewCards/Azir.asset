@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   championName: Azir
   image: {fileID: 21300000, guid: 3f168a10bba4d4140bb27b8a363f4ba6, type: 3}
-  traits: 1a0000001500000008000000
+  traits: 1a0000001000000002000000
   cost: 5
