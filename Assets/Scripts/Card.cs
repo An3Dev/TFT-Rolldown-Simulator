@@ -37,6 +37,12 @@ public class Card : MonoBehaviour
         animator.SetBool("Glow", glow);
     }
 
+    public void StopGlow()
+    {
+        animator.Play("Idle");
+        animator.SetBool("Glow", false);
+    }
+
     public void SetIndexInSelectionList(int index)
     {
         indexInSelectionList = index;

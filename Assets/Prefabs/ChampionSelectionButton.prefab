@@ -354,6 +354,7 @@ MonoBehaviour:
   traitImages: []
   filterPanel: {fileID: 1231398658}
   selectionImage: {fileID: 9207757243488211122}
+  animator: {fileID: 0}
 --- !u!1 &2065232933518902841
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,10 +587,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.65
-  m_fontSizeBase: 20.7
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 14.3
   m_fontSizeMax: 22
   m_fontStyle: 0

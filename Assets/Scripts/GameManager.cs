@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     bool useCardGlow = false;
 
     int level = 1;
+    [SerializeField] Slider levelSlider;
 
     int maxSelectedCards = 58;
 
@@ -81,6 +82,8 @@ public class GameManager : MonoBehaviour
 
     bool inSettings = false;
     private const string timerPreferenceKey = "TimerPreferenceKey";
+    private const string levelKey = "LevelKey";
+
     private const string enableCardGlowKey = "EnableCardGlow";
 
     List<string> cardsThatHaveBeenClickedOn = new List<string>();
@@ -129,7 +132,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        useCardGlow = PlayerPrefs.GetInt(enableCardGlowKey, 0) == 0 ? false : true;
+        useCardGlow = PlayerPrefs.GetInt(enableCardGlowKey, 1) == 0 ? false : true;
         enableGlowCheckMark.SetActive(useCardGlow);
         enableGlowEmptyBox.SetActive(!useCardGlow);
 
@@ -138,14 +141,19 @@ public class GameManager : MonoBehaviour
         costSortedCardsArray = new Card[championSelectionCardsList.Count];
         PopulateCostSortedArray();
         OnSortByCostClicked();
-        SetLevel(8);
-        SetProbabilityText();
-        SetLevelText();
+
+        int tempLevel = PlayerPrefs.GetInt(timerPreferenceKey, 8);
+        SetLevel(tempLevel);
+
+
+        
 
         //print(PlayerPrefs.GetInt(timerPreferenceKey, 1));
-        timerAmountInSeconds = PlayerPrefs.GetInt(timerPreferenceKey, 1);
+        int index = PlayerPrefs.GetInt(timerPreferenceKey, 3);
+        timerAmountInSeconds = secondsInDropdown[(int)index];
+        timerDropdown.SetValueWithoutNotify(index);
+        timer = timerAmountInSeconds;
 
-        timerDropdown.SetValueWithoutNotify((int)timerAmountInSeconds);
     }
 
 
@@ -264,7 +272,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnDropdownChanged(int index)
+    public void OnTimerDropdownChanged(int index)
     {
         if (index == 0)
         {
@@ -275,36 +283,37 @@ public class GameManager : MonoBehaviour
         }
         //print("Changed: " + index);
         PlayerPrefs.SetInt(timerPreferenceKey, index);
+        timer = timerAmountInSeconds;
     }
 
-    public void OnChangeTimer(float seconds)
-    {
-        if (seconds <= 0)
-        {
-            timerSetupText.text = "Disabled";
-            timerAmountInSeconds = 0;
-        } else
-        {
-            timerSetupText.text = seconds.ToString() + " secs";
-            timerAmountInSeconds = seconds;
-            timer = timerAmountInSeconds;
-        }
-    }
+    //public void OnChangeTimer(float seconds)
+    //{
+    //    if (seconds <= 0)
+    //    {
+    //        timerSetupText.text = "Disabled";
+    //        timerAmountInSeconds = 0;
+    //    } else
+    //    {
+    //        timerSetupText.text = seconds.ToString() + " secs";
+    //        timerAmountInSeconds = seconds;
+    //        timer = timerAmountInSeconds;
+    //    }
+    //}
 
-    public void OnEndInputFieldEdit(string text)
-    {
-        text = text.Trim();
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            OnChangeTimer(timerAmountInSeconds);
-        } else
-        {
-            if (text.ToLower().Contains("sec"))
-            {
+    //public void OnEndInputFieldEdit(string text)
+    //{
+    //    text = text.Trim();
+    //    if (string.IsNullOrWhiteSpace(text))
+    //    {
+    //        OnChangeTimer(timerAmountInSeconds);
+    //    } else
+    //    {
+    //        if (text.ToLower().Contains("sec"))
+    //        {
                 
-            }
-        }
-    }
+    //        }
+    //    }
+    //}
 
 #region Search Bar Code
 
@@ -724,6 +733,10 @@ public class GameManager : MonoBehaviour
     public void SetLevel(int level)
     {
         this.level = level;
+        PlayerPrefs.SetInt(levelKey, level);
+        SetProbabilityText();
+        SetLevelText();
+        levelSlider.value = level;
     }
 
 
@@ -860,7 +873,7 @@ public class GameManager : MonoBehaviour
 
             /* selects random champion from the specific "deck" in which all cards have the same cost */
             int randomChamp = Random.Range(0, champions.Length);
-
+            cardSlotArray[i].StopGlow();
             SetCardUI(cardSlotArray[i], champions[randomChamp], i);         
         }
     }
