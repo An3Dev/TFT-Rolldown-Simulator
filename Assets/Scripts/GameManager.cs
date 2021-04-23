@@ -29,12 +29,15 @@ public class GameManager : MonoBehaviour
     public GameObject[] objectsToDisableOnPlay;
     public GameObject[] objectsToEnableOnPlay;
 
+    public GameObject enableGlowCheckMark, enableGlowEmptyBox;
+
     [Header("SELECTED CARDS COMPONENTS")]
     public Card[] selectedCardsUIArray;
     public GridLayoutGroup gridLayoutGroup;
     public float maxCardWidth = 200;
     public float minWidth = 100;
     float cardWidthToHeightRatio = 0.75f;
+    bool useCardGlow = false;
 
     int level = 1;
 
@@ -78,6 +81,9 @@ public class GameManager : MonoBehaviour
 
     bool inSettings = false;
     private const string timerPreferenceKey = "TimerPreferenceKey";
+    private const string enableCardGlowKey = "EnableCardGlow";
+
+    List<string> cardsThatHaveBeenClickedOn = new List<string>();
 
     private void Awake()
     {
@@ -123,16 +129,23 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        useCardGlow = PlayerPrefs.GetInt(enableCardGlowKey, 0) == 0 ? false : true;
+        enableGlowCheckMark.SetActive(useCardGlow);
+        enableGlowEmptyBox.SetActive(!useCardGlow);
+
 
         CreateChampionSelectionButtons();
         costSortedCardsArray = new Card[championSelectionCardsList.Count];
         PopulateCostSortedArray();
         OnSortByCostClicked();
+        SetLevel(8);
         SetProbabilityText();
         SetLevelText();
 
         //print(PlayerPrefs.GetInt(timerPreferenceKey, 1));
-        timerDropdown.SetValueWithoutNotify(PlayerPrefs.GetInt(timerPreferenceKey, 1));
+        timerAmountInSeconds = PlayerPrefs.GetInt(timerPreferenceKey, 1);
+
+        timerDropdown.SetValueWithoutNotify((int)timerAmountInSeconds);
     }
 
 
@@ -189,11 +202,16 @@ public class GameManager : MonoBehaviour
         inSettings = opened;
     }
 
+    public void EnableCardGlow(bool enable)
+    {
+        useCardGlow = enable;
+        PlayerPrefs.SetInt(enableCardGlowKey, enable ? 1 : 0);
+    }
+
     private void Update()
     {
         if (inSettings)
             return;
-
 
 
         if (Input.GetKeyDown(KeyBinds.GetKeyBind(KeyBinds.Action.Refresh)))
@@ -318,7 +336,6 @@ public class GameManager : MonoBehaviour
 
     public void OnSortByCostClicked()
     {
-        print("Sort by cost");
         sortChampionsAlphabetically = false;
         SortUIByCost();
     }
@@ -498,7 +515,41 @@ public class GameManager : MonoBehaviour
         } else
         {
             gridLayoutGroup.cellSize = new Vector2(114, 114 * cardWidthToHeightRatio);
+        }
+    }
 
+    public void SelectCardsWithTrait(int indexInTrait)
+    {
+        Trait trait = (Trait)indexInTrait;
+        for (int i = 0; i < championSelectionCardsList.Count; i++)
+        {
+            Trait[] traits = championSelectionCardsList[i].GetTraits();
+            foreach(Trait thisTrait in traits)
+            {
+                if (thisTrait.Equals(trait))
+                {
+                    if (!championSelectionCardsList[i].IsSelected())
+                    {
+                        championSelectionCardsList[i].OnSelect();
+                    }
+                }
+            }       
+        }
+    }
+
+    public void DeselectCardsWithTrait(int indexInTrait)
+    {
+        Trait trait = (Trait)indexInTrait;
+        for (int i = 0; i < championSelectionCardsList.Count; i++)
+        {
+            Trait[] traits = championSelectionCardsList[i].GetTraits();
+            foreach (Trait thisTrait in traits)
+            {
+                if (thisTrait.Equals(trait))
+                {
+                    championSelectionCardsList[i].OnDeselect();
+                }
+            }
         }
     }
 
@@ -530,6 +581,7 @@ public class GameManager : MonoBehaviour
         championSelectionListParent.SetActive(true);
         DisablePreStartObjects(false);
         EnablePostStartObjects(false);
+        cardsThatHaveBeenClickedOn.Clear();
         /* disable cards */
         for (int i = 0; i < cardSlotArray.Length; i++)
         {
@@ -645,6 +697,9 @@ public class GameManager : MonoBehaviour
         {
             championSelectionCardsList[i].OnDeselect();
         }
+
+        TraitDropdown.Instance.DeselectAllTraits();
+
     }
 
     public void OnChangeLevel(Single level)
@@ -682,7 +737,9 @@ public class GameManager : MonoBehaviour
         if (IsChoiceCorrect(card))
         {
             ChangeScore(1);
-        } else
+            cardsThatHaveBeenClickedOn.Add(card.GetName());
+        }
+        else
         {
             incorrectCardsNum += 1;
             ChangeScore(-1);
@@ -818,5 +875,29 @@ public class GameManager : MonoBehaviour
         currCard.SetTraits(champ.traits);
         currCard.SetCost(champ.cost);
         currCard.SetIndexInDeck(index);
+
+        if (useCardGlow)
+        {
+            if (IsChoiceCorrect(currCard))
+            {
+                bool setGlow = false;
+                for (int i = 0; i < cardsThatHaveBeenClickedOn.Count; i++)
+                {
+                    // if this card was already selected
+                    if (cardsThatHaveBeenClickedOn[i].Equals(currCard.GetName()))
+                    {
+                        currCard.SetGlow(true);
+                        setGlow = true;
+                        break;
+                    }
+                }
+                if (!setGlow)
+                    currCard.SetGlow(false);
+            }
+            else
+            {
+                currCard.SetGlow(false);
+            }
+        }       
     }
 }

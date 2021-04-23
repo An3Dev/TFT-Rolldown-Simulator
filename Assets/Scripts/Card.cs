@@ -11,13 +11,16 @@ public class Card : MonoBehaviour
     public Image[] traitImages;
     public GameObject filterPanel;
     public GameObject selectionImage;
+    public Animator animator;
     bool isSelected = false;
-    string name;
+    string cardName;
     Trait[] traits;
     int cost;
     int indexInSelectionList = 0;
     int indexInDeck = 0;
     bool isFiltered = false;
+
+    bool shouldGlow = false;
     public void OnClickCard()
     {
         GameManager.Instance.OnCardClicked(indexInDeck);
@@ -25,7 +28,13 @@ public class Card : MonoBehaviour
 
     public string GetName()
     {
-        return name;
+        return cardName;
+    }
+
+    public void SetGlow(bool glow)
+    {
+        shouldGlow = glow;
+        animator.SetBool("Glow", glow);
     }
 
     public void SetIndexInSelectionList(int index)
@@ -40,7 +49,7 @@ public class Card : MonoBehaviour
 
     public void SetName(string name)
     {
-        this.name = name;
+        this.cardName = name;
         if (!cardNameText)
             return;
         cardNameText.text = name;
@@ -73,6 +82,11 @@ public class Card : MonoBehaviour
     public int GetCost()
     {
         return cost;
+    }
+
+    public bool IsSelected()
+    {
+        return isSelected;
     }
 
 
