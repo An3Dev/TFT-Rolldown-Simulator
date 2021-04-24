@@ -142,11 +142,10 @@ public class GameManager : MonoBehaviour
         PopulateCostSortedArray();
         OnSortByCostClicked();
 
-        int tempLevel = PlayerPrefs.GetInt(timerPreferenceKey, 8);
+        PlayerPrefs.DeleteKey(levelKey);
+        int tempLevel = PlayerPrefs.GetInt(levelKey, 8);
         SetLevel(tempLevel);
-
-
-        
+       
 
         //print(PlayerPrefs.GetInt(timerPreferenceKey, 1));
         int index = PlayerPrefs.GetInt(timerPreferenceKey, 3);
