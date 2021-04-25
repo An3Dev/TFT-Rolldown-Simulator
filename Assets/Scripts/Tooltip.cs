@@ -14,10 +14,11 @@ public class Tooltip : MonoBehaviour
 
     Trait currentTrait;
 
-    float hoverTime = 1;
+    float hoverTime = 0.2f;
 
     IEnumerator timer;
     bool stopTimer = false;
+    Vector2 size;
     private void Awake()
     {
         if (Instance == null)
@@ -28,12 +29,8 @@ public class Tooltip : MonoBehaviour
             Destroy(this);
         }
 
-        //tooltip = Instantiate(tooltipPrefab, canvas);
-        //text = tooltipPrefab.GetComponentInChildren<TextMeshProUGUI>();
-
         tooltip.transform.position = Vector2.zero;
         tooltip.SetActive(false);
-
     }
 
     public void StartTooltipTimer(Trait trait)
@@ -49,21 +46,27 @@ public class Tooltip : MonoBehaviour
     public void ShowTooltip()
     {
         int i = (int)currentTrait;
+        tooltip.transform.position = new Vector3(-100, -100);
+        tooltip.SetActive(true);
         string description = TraitDescriptions.descriptions[i];
 
-        text.text = description;
-
+        text.SetText(description);
+        size = text.textBounds.size;
         StartCoroutine(SetText());     
     }
 
     IEnumerator SetText()
     {
         yield return new WaitForSeconds(0.1f);
-        Vector2 size = (Vector2)text.textBounds.size;
-        //tooltip.GetComponent<RectTransform>().sizeDelta = size + Vector2.up * 10 + Vector2.right * 10;
-
         tooltip.SetActive(true);
-        tooltip.transform.position = Input.mousePosition + Vector3.up * (50) + Vector3.right * 175;
+
+        size = (Vector2)text.textBounds.size;
+        float lines = text.textInfo.lineCount;
+        //tooltip.GetComponent<RectTransform>().sizeDelta = size + Vector2.up * 10 + Vector2.right * 10;
+        //size = (Vector2)text.textBounds.size;
+        tooltip.GetComponent<RectTransform>().sizeDelta = size + Vector2.up * 20 + Vector2.right * 10;
+
+        tooltip.transform.position = Input.mousePosition + new Vector3(size.x / 2 + 5, (Input.mousePosition.y > Screen.height / 2 ? -1 : 1) * size.y / 2);
     }
 
     public void DisableTooltip()

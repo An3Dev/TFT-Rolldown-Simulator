@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5baf1315002025942b7cc3d57a913d86, type: 3}
   m_Name: Darius
   m_EditorClassIdentifier: 
-  championName: Darisu
+  championName: Darius
   image: {fileID: 21300000, guid: d099842dded7c1f4889235573f793490, type: 3}
   traits: 130000000c00000010000000
   cost: 5

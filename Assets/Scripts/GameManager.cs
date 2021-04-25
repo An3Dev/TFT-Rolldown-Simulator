@@ -69,8 +69,8 @@ public class GameManager : MonoBehaviour
             { 55, 30, 15, 0, 0 }, 
             { 45, 33, 20, 2, 0 }, 
             { 35, 35, 25, 5, 0 }, 
-            { 22, 35, 30, 12, 1 },
-            { 15, 25, 35, 20, 5 }, 
+            { 19, 35, 30, 15, 1 },
+            { 15, 20, 35, 25, 5 }, 
             { 10, 15, 30, 30, 15 } /* level 9  */
         };
 
@@ -636,6 +636,9 @@ public class GameManager : MonoBehaviour
 
         /*add this card to selected cards */
         selectedCards.Add(card);
+        IEnumerable<Card> orderedByName = selectedCards.OrderBy(c => c.GetCost()).ThenBy(n => n.GetName());
+        selectedCards = orderedByName.ToList<Card>();
+        
 
         if (selectedCards.Count > 0)
         {

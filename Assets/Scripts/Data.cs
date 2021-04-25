@@ -47,7 +47,7 @@ public class TraitDescriptions
         "Kindred deploys as Lamb and Wolf separately, each with their own abilities and gaining the effects of Kindred's items. (1)",
         "Forgotten champions have bonus Health and Attack Damage. Each Shadow item worn by a Forgotten champion increases the bonus by 10% on all Forgotten champions, stacking up to 5 times. (3/6/9)",
         "If you have exactly one God-King they deal 30% bonus damage to enemies who have at least one of their Rival Traits. Garen's Rival Traits: Forgotten, Nightbringer, Coven, Hellion, Dragonslayer, Abomination, Revenant. Darius' Rival Traits: Redeemed, Dawnbringer, Verdant, Draconic, Ironclad. (1)",
-        "Hellions gain Attack Speed. Whenever a Hellion dies an imperfect Doppelhellion of the same type will leap from the Hellion portal and join the fight! (3/5/7)If you have exactly one God-King they deal 30% bonus damage to enemies who have at least one of their Rival Traits. Garen's Rival Traits: Forgotten, Nightbringer, Coven, Hellion, Dragonslayer, Abomination, Revenant. Darius' Rival Traits: Redeemed, Dawnbringer, Verdant, Draconic, Ironclad. (1)",
+        "Hellions gain Attack Speed. Whenever a Hellion dies an imperfect Doppelhellion of the same type will leap from the Hellion portal and join the fight! (3/5/7)",
         "All allies gain increased Mana per Basic Attack. (2/4)",
         "All allies gain bonus Armor. (2/3)",
         "All allies block a flat amount of damage from all sources. (2/4/6)",
